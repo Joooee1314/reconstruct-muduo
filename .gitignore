@@ -1,0 +1,17 @@
+# 忽略所有编译生成的文件夹
+build/
+bin/
+lib/
+
+# 忽略所有的目标文件和库文件
+*.o
+*.d
+*.so
+*.a
+
+# 忽略可执行程序
+example/testserver
+
+# 忽略编辑器配置
+.vscode/
+.idea/
