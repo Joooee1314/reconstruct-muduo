@@ -61,13 +61,23 @@ enum LogLevel
 
 class Logger:noncopyable{
 public:
+    using OutputFunc = void (*)(const char* msg, int len);
+    using FlushFunc = void (*)();
+
     //获取日志唯一的实例对象
     static Logger& getinstance();
     //设置日志级别
     void setloglevel(int level);
     //写日志
     void log(std::string Msg);
+
+    //设置输出回调
+    static void setOutput(OutputFunc);
+    //设置刷新回调
+    static void setFlush(FlushFunc);
 private:
     int loglevel_;
     Logger(){};
+    static OutputFunc g_output;
+    static FlushFunc g_flush;
 };

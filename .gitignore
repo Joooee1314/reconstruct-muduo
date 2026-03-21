@@ -15,3 +15,6 @@ example/testserver
 # 忽略编辑器配置
 .vscode/
 .idea/
+
+# 忽略日志文件
+*.log
