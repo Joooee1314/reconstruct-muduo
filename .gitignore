@@ -18,3 +18,6 @@ example/testserver
 
 # 忽略日志文件
 *.log
+
+# 忽略整个 wrk 的源码文件夹
+wrk/

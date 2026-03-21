@@ -4,15 +4,19 @@
 
 #include "noncopyable.h"
 
-#define LOG_INFO(LogmsgFormat,...)\
-    do\
-    {\
-        Logger &logger = Logger::getinstance();\
-        logger.setloglevel(INFO);\
-        char buf[1024];\
-        snprintf(buf,1024,LogmsgFormat, ##__VA_ARGS__);\
-        logger.log(buf);\
-    }while(0)
+#ifdef QPSTESTON
+#define LOG_INFO(LogmsgFormat, ...)
+#else
+    #define LOG_INFO(LogmsgFormat,...)\
+        do\
+        {\
+            Logger &logger = Logger::getinstance();\
+            logger.setloglevel(INFO);\
+            char buf[1024];\
+            snprintf(buf,1024,LogmsgFormat, ##__VA_ARGS__);\
+            logger.log(buf);\
+        }while(0)
+#endif
 
 #define LOG_ERROR(LogmsgFormat,...)\
     do\

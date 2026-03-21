@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -Wall -g
+CXXFLAGS = -Wall -g	
 LDFLAGS = -lmymuduo -lpthread
 SRCS = $(wildcard *.cc)
 TARGETS = $(SRCS:.cc=)
