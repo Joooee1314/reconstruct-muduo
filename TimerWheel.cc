@@ -41,22 +41,26 @@ void TimerWheel::updateConnection(const TcpConnectionPtr& conn){
 
     // 屏蔽同一秒的重复入桶，复用已有的Entry对象，避免性能问题
     std::any& ctx = conn->getContext();
-    if (auto* pEntry = std::any_cast<EntryPtr>(&ctx)) {
-        // 过滤同一秒的重复请求，避免频繁入桶导致性能问题
-        if ((*pEntry)->lastTickTime() == now) return; 
+    if (auto* pWeakEntry = std::any_cast<std::weak_ptr<Entry>>(&ctx)) {
+        if (auto pEntry = pWeakEntry->lock()){
+            // 过滤同一秒的重复请求，避免频繁入桶导致性能问题
+            if (pEntry->lastTickTime() == now) return; 
 
-        // 如果是这一秒第一次见它，更新它的时间戳，然后复用它入桶
-        (*pEntry)->setLastTickTime(now);
-        wheel_.back().insert(*pEntry);
-        return;
+            // 如果是这一秒第一次见它，更新它的时间戳，然后复用它入桶
+            pEntry->setLastTickTime(now);
+            wheel_.back().insert(pEntry);
+            return;
+        }
     }
 
     /**
      * 下面是第一次建立连接时需要make_shared一个Entry对象入桶的情况
      */
     EntryPtr entry = std::make_shared<Entry>(conn);
+    entry->setLastTickTime(now);
     // 保存到连接上下文
-    conn->setContext(entry);
+    std::weak_ptr<Entry> weakEntry(entry);
+    conn->setContext(weakEntry);
     // 放到当前时间轮尾部的桶内，表示这个连接刚刚有活动，重置了超时时间
     wheel_.back().insert(entry);
 }

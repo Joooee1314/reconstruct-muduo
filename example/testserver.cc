@@ -38,24 +38,24 @@ public:
 private:
     void onConnection(const TcpConnectionPtr& conn){
         if(conn->connected()){
-            LOG_INFO("Client %s -> Server %s status: ONLINE", 
+            LOG_INFO("Client %s -> Server %s status: ONLINE\n", 
                      conn->peerAddress().toIpPort().c_str(),
                      conn->localAddress().toIpPort().c_str());
         }
         else{
-            LOG_INFO("Client %s status: OFFLINE", conn->peerAddress().toIpPort().c_str());
+            LOG_INFO("Client %s status: OFFLINE\n", conn->peerAddress().toIpPort().c_str());
             conn->shutdown();
         }
     }
 
     void onMessage(const TcpConnectionPtr& conn,Buffer* buf,Timestamp time){
         string ret=buf->retrieveAllAsString();
-        LOG_INFO("Received data from %s: %s, Time: %s", conn->peerAddress().toIpPort().c_str(), ret.c_str(), time.toString().c_str());
+        LOG_INFO("Received data from %s: %s, Time: %s\n", conn->peerAddress().toIpPort().c_str(), ret.c_str(), time.toString().c_str());
         conn->send(ret);
     }
 
     void onWriteComplete(const TcpConnectionPtr& conn) {
-        LOG_INFO("Write complete to %s, shutting down write side", conn->peerAddress().toIpPort().c_str());
+        LOG_INFO("Write complete to %s, shutting down write side\n", conn->peerAddress().toIpPort().c_str());
         conn->shutdown(); // 数据发完后再关闭写端
     }
 
@@ -74,7 +74,7 @@ int main(){
     InetAddress addr(8000,"127.0.0.1");
     EchoServer server(&loop,addr,"muduoserver");
 
-    LOG_INFO("EchoServer is running...");
+    LOG_INFO("EchoServer is running...\n");
 
     server.start();
     loop.loop();

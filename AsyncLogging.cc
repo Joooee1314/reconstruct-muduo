@@ -1,6 +1,5 @@
 #include "AsyncLogging.h"
 
-#include <cassert>
 #include <chrono>
 
 AsyncLogging::AsyncLogging(const std::string& filename)
@@ -54,7 +53,11 @@ void AsyncLogging::threadFunc() {
     BufferPtr buffer2 = std::make_unique<Buffer>();
     std::vector<BufferPtr> buffersToWrite;
     FILE* fp = fopen(filename_.c_str(), "a");
-    assert(fp);
+    if (!fp) {
+        fprintf(stderr, "打开日志失败！文件名: %s, 错误原因: %s\n", 
+                filename_.c_str(), strerror(errno));
+        exit(1); 
+    }
     while (running_) {
         {
             //上锁避免日志输出混乱

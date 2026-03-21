@@ -13,8 +13,8 @@
 //防止一个线程创建多个EventLoop
 __thread EventLoop *t_loopInThisThread = nullptr;
 
-//定义默认的poller io复用接口超时时间
-const int kPollTimeMs=10000;
+//定义默认的poller io复用接口超时时间,单位ms
+const int kPollTimeMs=1000; 
 
 //创建wakeupfd，用来notify唤醒subReactor处理新来的channel
 int creatEventfd(){
@@ -77,6 +77,12 @@ void EventLoop::loop(){
          */
         doPendingFunctors();
 
+        /**
+         * 有趣的小现象：因为上面会有epoll_wait阻塞，所以时间轮实际上是每隔大于1s的时间才会更新
+         * 我测试的时候设置epoll_wait超时时间是10s，然后时间轮的长度设置为60s
+         * 但我只用了一个客户端连接并且一直等待着不发数据，结果发现需要将近600s的时间才会踢掉连接
+         * 因此如果需要准确的时间的话，只需要将epoll_wait的超时时间设置为1s或者更小就可以了
+         */
         if (timerCallback_) {
             //获取单调时钟当前时间，判断是否需要执行定时器回调函数
             auto now = std::chrono::steady_clock::now();
