@@ -7,6 +7,7 @@
 #include "EventLoopThreadPool.h"
 #include "Callbacks.h"
 #include "TcpConnection.h"
+#include "TimerWheel.h"
 #include "Buffer.h"
 
 #include <functional>
@@ -63,4 +64,6 @@ private:
 
     int nextConnId_;
     ConnectionMap connections_;
+
+    TimerWheel timerWheel_;  // 心跳超时检测时间轮
 };

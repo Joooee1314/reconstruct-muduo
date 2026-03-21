@@ -8,6 +8,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <memory>
+#include <chrono>
 
 //防止一个线程创建多个EventLoop
 __thread EventLoop *t_loopInThisThread = nullptr;
@@ -60,6 +61,8 @@ void EventLoop::loop(){
     quit_=false;
 
     LOG_INFO("EventLoop %p start looping \n",this);
+    //获取单调时钟当前的时间
+    lastTimerTime_ = std::chrono::steady_clock::now();
     while(!quit_){
         activeChannels_.clear();
         pollReturnTime_ = poller_->poll(kPollTimeMs,&activeChannels_);
@@ -73,6 +76,15 @@ void EventLoop::loop(){
          * mainloop率先注册一个回调cb(需要subloop来执行) wakeup subloop执行下面的方法
          */
         doPendingFunctors();
+
+        if (timerCallback_) {
+            //获取单调时钟当前时间，判断是否需要执行定时器回调函数
+            auto now = std::chrono::steady_clock::now();
+            if (now - lastTimerTime_ >= std::chrono::seconds(1)) {
+                lastTimerTime_ = now;
+                timerCallback_();
+            }
+        }
     }
 
     LOG_INFO("EventLoop %p stop looping \n",this);

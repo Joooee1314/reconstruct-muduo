@@ -22,6 +22,7 @@ TcpServer::TcpServer(EventLoop* loop,
             , messageCallback_()
             , nextConnId_(1)
             , started_(0)
+            , timerWheel_(60)
 {
     //当有新用户连接的时候，会执行TcpServer::newConnection回调
     acceptor_->setNewConnectionCallback([this](int sockfd,const InetAddress& peerAddr){
@@ -49,6 +50,7 @@ void TcpServer::setThreadNum(int numThreads){
 void TcpServer::start(){
     if(started_++==0){ //防止一个TcpServer对象被start多次
         threadPool_->start(threadInitCallback_); //启动底层的loop线程池
+        loop_->setTimerCallback(std::bind(&TimerWheel::onTimerTick, &timerWheel_));
         loop_->runInLoop((std::bind(&Acceptor::listen,acceptor_.get())));
     }
 
@@ -84,7 +86,12 @@ void TcpServer::newConnection(int sockfd,const InetAddress &peerAddr){
     connections_[connName]=conn;
     //下面的回调都是用户设置给TcpServer => TcpConnection =>Channel =>Poller =>notify Channel回调
     conn->setConnectionCallback(connectionCallback_);
-    conn->setMessageCallback(messageCallback_);
+    conn->setMessageCallback([this](const TcpConnectionPtr& conn, Buffer* buf, Timestamp time){
+        timerWheel_.updateConnection(conn);
+        if (messageCallback_) {
+            messageCallback_(conn, buf, time);
+        }
+    });
     conn->setWriteCompleteCallback(writeCompleteCallback_);
 
     //设置了如何关闭连接的回调
@@ -92,6 +99,8 @@ void TcpServer::newConnection(int sockfd,const InetAddress &peerAddr){
         std::bind(&TcpServer::removeConnection,this,std::placeholders::_1)
     );
 
+    // 连接初次激活时加入时间轮
+    timerWheel_.updateConnection(conn);
     //直接调用TcpConnection::connecEstablished
     ioLoop->runInLoop(std::bind(&TcpConnection::connectEstablished,conn));
 

@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <atomic>
+#include <any>
 
 class Channel;
 class EventLoop;
@@ -50,6 +51,11 @@ public:
     void connectEstablished();
     //销毁链接
     void connectDestroyed();
+
+    void setContext(const std::any& context){ context_ = context; }
+    const std::any& getContext() const { return context_; }
+    std::any& getContext() { return context_; }
+    
 private:
     enum StateE{kDisconnected, kConnecting, kConnected, kDisconnecting};
     void setState(StateE state){state_=state;}
@@ -79,6 +85,7 @@ private:
     HighWaterMarkCallback highWaterMarkCallback_;
     CloseCallback closeCallback_;
 
+    std::any context_;
     size_t highWaterMark_;
 
     Buffer inputBuffer_; // 接收数据缓冲区

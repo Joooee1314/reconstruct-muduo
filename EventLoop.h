@@ -5,6 +5,7 @@
 #include <atomic>
 #include <memory>
 #include <mutex>
+#include <chrono>
 
 #include "noncopyable.h"
 #include "Timestamp.h"
@@ -30,6 +31,9 @@ public:
     void runInLoop(Functor cb);
     //把cb放入队列中，唤醒loop所在线程执行cb
     void queueInLoop(Functor cb);
+
+    //设置定时事件处理函数，供TcpServer使用
+    void setTimerCallback(Functor cb) { timerCallback_ = std::move(cb); }
 
     //用来唤醒loop所在线程
     void wakeup();
@@ -63,4 +67,7 @@ private:
     std::atomic_bool callingPendingFunctors_;//标识当前loop是否有需要执行的回调操作
     std::vector<Functor> pendingFunctors_; //存储loop需要执行的所有回调操作
     std::mutex mutex_; //互斥锁，用来保护vecotr容器的线程安全操作
+
+    Functor timerCallback_;
+    std::chrono::steady_clock::time_point lastTimerTime_;
 };
