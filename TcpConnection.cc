@@ -50,12 +50,11 @@ void TcpConnection::send(const std::string &buf){
             sendInLoop(buf.c_str(),buf.size());
         }
         else{
-            loop_->runInLoop(std::bind(
-                &TcpConnection::sendInLoop,
-                this,
-                buf.c_str(),
-                buf.size()
-            ));
+            // 获取当前对象的 shared_ptr，确保 Lambda 执行完之前对象不被析构
+            auto self = shared_from_this();
+            loop_->runInLoop([this,buf]{
+                this->sendInLoop(buf.data(), buf.size());
+            });
         }
     }
 }

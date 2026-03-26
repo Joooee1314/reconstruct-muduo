@@ -30,14 +30,14 @@ Timestamp EpollPoller::poll(int timeoutMs,ChannelList* activeChannels){
     Timestamp now(Timestamp::now());
 
     if(numEvents>0){
-        LOG_INFO("%d events happened \n",numEvents);
+        LOG_DEBUG("%d events happened \n",numEvents);
         fillActiveChannels(numEvents,activeChannels);
         if(numEvents == events_.size()){
             events_.resize(events_.size()*2);
         }
     }
     else if(numEvents==0){
-        LOG_INFO("%s nothing happened \n",__FUNCTION__);
+        LOG_DEBUG("%s nothing happened \n",__FUNCTION__);
     }
     else{
         if(saveErrno!=EINTR){
