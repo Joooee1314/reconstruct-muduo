@@ -1,7 +1,6 @@
 #include "TimerWheel.h"
 #include "TcpConnection.h"
 
-#include <cassert>
 
 Entry::~Entry(){
     TcpConnectionPtr conn = conn_.lock();
@@ -15,9 +14,10 @@ Entry::~Entry(){
 TimerWheel::TimerWheel(size_t idleSeconds)
     : idleSeconds_(idleSeconds)
 {
-    assert(idleSeconds_ > 0);
-    //初始化时间轮，idleSeconds_表示时间轮的格数，每格代表1秒，并且每格都有一个空的Bucket
-    wheel_.assign(idleSeconds_, Bucket());
+    if(idleSeconds_>0){
+        //初始化时间轮，idleSeconds_表示时间轮的格数，每格代表1秒，并且每格都有一个空的Bucket
+        wheel_.assign(idleSeconds_, Bucket());
+    }
 }
 
 TimerWheel::~TimerWheel() = default;
