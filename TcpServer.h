@@ -28,6 +28,7 @@ public:
     TcpServer(EventLoop* loop,
                 const InetAddress &listenAddr,
                 const std::string nameArg,
+                size_t timeout=0,
                 Option option=kNoReusePort);
     ~TcpServer();
 
@@ -66,4 +67,5 @@ private:
     ConnectionMap connections_;
 
     TimerWheel timerWheel_;  // 心跳超时检测时间轮
+    size_t idleTimeout_;
 };

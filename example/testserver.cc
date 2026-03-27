@@ -17,8 +17,8 @@ void asyncOutput(const char* msg, int len) {
 
 class EchoServer{
 public:
-    EchoServer(EventLoop* loop,const InetAddress &listenAddr,const string nameArg)
-        :server_(loop,listenAddr,nameArg)
+    EchoServer(EventLoop* loop,const InetAddress &listenAddr,const string nameArg,size_t timeout)
+        :server_(loop,listenAddr,nameArg,timeout)
         ,loop_(loop)
     {
         server_.setConnectionCallback(bind(&EchoServer::onConnection,this,_1));
@@ -72,7 +72,7 @@ int main(){
     
     EventLoop loop;
     InetAddress addr(8000,"127.0.0.1");
-    EchoServer server(&loop,addr,"muduoserver");
+    EchoServer server(&loop,addr,"muduoserver",10);
 
     LOG_INFO("EchoServer is running...\n");
 

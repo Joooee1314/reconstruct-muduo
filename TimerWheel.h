@@ -32,7 +32,7 @@ using Wheel = std::deque<Bucket>;
 
 class TimerWheel {
 public:
-    explicit TimerWheel(size_t idleSeconds = 60);
+    explicit TimerWheel(size_t idleSeconds);
     ~TimerWheel();
 
     // 每秒调用一次，进轮一格
