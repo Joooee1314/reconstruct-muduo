@@ -215,6 +215,14 @@ void TcpConnection::handleError(){
     else{
         err = optval;
     }
+
+    if(err == ECONNRESET || err == EPIPE){
+        // 对端主动关闭/重置连接是压测中的正常现象，按正常断开处理即可。
+        handleClose();
+        return;
+    }
+
     LOG_ERROR("TcpConnection::handleError() name:%s - SO_ERROR:%d \n",name_.c_str(),err);
+    handleClose();
 }
 

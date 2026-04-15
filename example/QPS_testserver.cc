@@ -1,19 +1,10 @@
 #include <mymuduo/TcpServer.h>
 #include <mymuduo/Logger.h>
-#include <mymuduo/AsyncLogging.h> 
 #include <iostream>
 #include <string>
 
 using namespace std;
 using namespace placeholders;
-
-static AsyncLogging* g_asyncLog = nullptr;
-
-void asyncOutput(const char* msg, int len) {
-    if (g_asyncLog) {
-        g_asyncLog->append(msg, len);
-    }
-}
 
 class EchoServer{
 public:
@@ -29,7 +20,7 @@ public:
     );
 
         //设置合适的loop线程数量，一般等于cpu核数
-        server_.setThreadNum(10);
+        server_.setThreadNum(12);
     }
 
     void start(){
@@ -74,11 +65,6 @@ private:
 };
 
 int main(){
-
-    AsyncLogging log("QPS_testserver.log");
-    g_asyncLog = &log;
-    Logger::setOutput(asyncOutput); // 设置 Logger 的输出回调为 asyncOutput
-    log.start();//启动异步日志
     
     EventLoop loop;
     InetAddress addr(8000,"127.0.0.1");

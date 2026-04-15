@@ -11,6 +11,7 @@ lib/
 
 # 忽略可执行程序
 example/testserver
+example/QPS_testserver
 
 # 忽略编辑器配置
 .vscode/

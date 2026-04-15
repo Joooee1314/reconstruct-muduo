@@ -1,0 +1,58 @@
+wrk -t8 -c256 -d40s --latency http://127.0.0.1:8000/
+  8 threads and 256 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     6.45ms   55.02ms 746.34ms   98.48%
+    Req/Sec   105.46k    11.07k  133.29k    73.75%
+  Latency Distribution
+     50%  221.00us
+     75%  342.00us
+     90%  517.00us
+     99%  295.26ms
+  33694857 requests in 40.81s, 3.14GB read
+Requests/sec: 825713.50
+Transfer/sec:     78.75MB
+
+
+wrk -t8 -c512 -d40s --latency http://127.0.0.1:8000/
+  8 threads and 512 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     4.65ms   45.38ms 761.94ms   98.98%
+    Req/Sec   107.64k    11.59k  136.34k    70.83%
+  Latency Distribution
+     50%  424.00us
+     75%  656.00us
+     90%    0.94ms
+     99%   61.00ms
+  34356638 requests in 40.84s, 3.20GB read
+Requests/sec: 841337.98
+Transfer/sec:     80.24MB
+
+
+wrk -t8 -c1024 -d40s --latency http://127.0.0.1:8000/
+  8 threads and 1024 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     8.05ms   60.07ms 786.86ms   98.36%
+    Req/Sec   106.29k    11.75k  137.52k    71.18%
+  Latency Distribution
+     50%    0.87ms
+     75%    1.34ms
+     90%    1.92ms
+     99%  346.47ms
+  33891826 requests in 40.80s, 3.16GB read
+Requests/sec: 830672.64
+Transfer/sec:     79.22MB
+
+wrk -t8 -c2048 -d40s --latency http://127.0.0.1:8000/
+  8 threads and 2048 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     6.80ms   48.11ms 754.81ms   98.85%
+    Req/Sec   100.20k    11.21k  128.61k    69.33%
+  Latency Distribution
+     50%    1.84ms
+     75%    2.74ms
+     90%    3.80ms
+     99%  148.30ms
+  31940097 requests in 40.82s, 2.97GB read
+Requests/sec: 782407.06
+Transfer/sec:     74.62MB
+
