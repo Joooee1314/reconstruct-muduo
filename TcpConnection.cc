@@ -50,10 +50,10 @@ void TcpConnection::send(const std::string &buf){
             sendInLoop(buf.c_str(),buf.size());
         }
         else{
-            // 获取当前对象的 shared_ptr，确保 Lambda 执行完之前对象不被析构
+            // 把 shared_ptr 捕获进任务，保证异步执行时连接对象仍然存活
             auto self = shared_from_this();
-            loop_->runInLoop([this,buf]{
-                this->sendInLoop(buf.data(), buf.size());
+            loop_->runInLoop([self,buf]{
+                self->sendInLoop(buf.data(), buf.size());
             });
         }
     }
